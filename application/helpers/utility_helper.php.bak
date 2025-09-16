@@ -1,0 +1,348 @@
+<?php
+
+if (!function_exists('global_image_url')) {
+
+    function global_image_url() {
+        $CI = & get_instance();
+        return $CI->config->slash_item('global_image_url');
+    }
+
+}
+
+function check_admin_login() {
+    $CI = & get_instance();
+    $is_admin_login = $CI->session->userdata('is_admin_login');
+
+    if ($is_admin_login == FALSE) {
+        redirect(base_url() . 'sm/customer/login');
+    } else {
+        return true;
+    }
+}
+
+function get_division_by_id($id) {
+
+    $ci = & get_instance();
+    $sm_db = $ci->load->database('icel', TRUE); // database conection for read operation
+
+    $query = $sm_db->select('DIVISION_ID,DIVISION_CODE,DIVISION_NAME');
+    $query = $sm_db->where('DIVISION_CODE', $id);
+    $query = $sm_db->get('divisions');
+    $total_row = $query->num_rows();
+    if ($total_row > 0) {
+        $ressult = $query->row();
+        return $ressult->DIVISION_NAME;
+    } else {
+        return false;
+    }
+}
+
+function get_district_by_id($id) {
+
+    $ci = & get_instance();
+    $sm_db = $ci->load->database('icel', TRUE); // database conection for read operation
+
+    $query = $sm_db->select('DISTRICT_ID,DISTRICT_CODE,DISTRICT_NAME');
+    $query = $sm_db->where('DISTRICT_ID', $id);
+    $query = $sm_db->get('districts');
+    $total_row = $query->num_rows();
+    if ($total_row > 0) {
+        $ressult = $query->row();
+        return $ressult->DISTRICT_NAME;
+    } else {
+        return false;
+    }
+}
+
+function get_customer_name_by_id($id) {
+
+    $ci = & get_instance();
+    $sm_db = $ci->load->database('icel', TRUE); // database conection for read operation
+
+    $query = $sm_db->select('name');
+    $query = $sm_db->where('customer_id', $id);
+    $query = $sm_db->get('customer');
+    $total_row = $query->num_rows();
+    if ($total_row > 0) {
+        $ressult = $query->row();
+        return $ressult->name;
+    } else {
+        return false;
+    }
+}
+
+function get_customer_pic_by_id($id) {
+
+    $ci = & get_instance();
+    $sm_db = $ci->load->database('icel', TRUE); // database conection for read operation
+
+    $query = $sm_db->select('picture');
+    $query = $sm_db->where('customer_id', $id);
+    $query = $sm_db->get('customer');
+    $total_row = $query->num_rows();
+    if ($total_row > 0) {
+        $ressult = $query->row();
+        return $ressult->picture;
+    } else {
+        return false;
+    }
+}
+
+function get_engineer_name_by_id($id) {
+
+    $ci = & get_instance();
+    $sm_db = $ci->load->database('icel', TRUE); // database conection for read operation
+
+    $query = $sm_db->select('name');
+    $query = $sm_db->where('ser_eng_id', $id);
+    $query = $sm_db->get('sm_service_engineer');
+    $total_row = $query->num_rows();
+    if ($total_row > 0) {
+        $ressult = $query->row();
+        return $ressult->name;
+    } else {
+        return false;
+    }
+}
+
+function get_admin_name_by_id($id) {
+
+    $ci = & get_instance();
+    $sm_db = $ci->load->database('icel', TRUE); // database conection for read operation
+
+    $query = $sm_db->select('id,username');
+    $query = $sm_db->where('id', $id);
+    $query = $sm_db->get('sm_admin');
+    $total_row = $query->num_rows();
+    if ($total_row > 0) {
+        $ressult = $query->row();
+        return $ressult->username;
+    } else {
+        return false;
+    }
+}
+
+function getServiceEngName($id) {
+    $ci = & get_instance();
+    $sm_db = $ci->load->database('icel', TRUE); // database conection for read operation
+
+    $query = $sm_db->select('ser_eng_id,name');
+    $query = $sm_db->where('ser_eng_id', $id);
+    $query = $sm_db->get('sm_service_engineer');
+    $total_row = $query->num_rows();
+    if ($total_row > 0) {
+        $ressult = $query->row();
+        return $ressult->name;
+    } else {
+        return false;
+    }
+}
+
+function get_commenter_name_by_id($comment_from, $comments_by) {
+    $ci = & get_instance();
+    $sm_db = $ci->load->database('icel', TRUE); // database conection for read operation
+    if ($comment_from == 'se') {
+
+        $query = $sm_db->select('ser_eng_id,name');
+        $query = $sm_db->where('ser_eng_id', $comments_by);
+        $query = $sm_db->get('sm_service_engineer');
+        $total_row = $query->num_rows();
+        if ($total_row > 0) {
+            $ressult = $query->row();
+            return $ressult->name;
+        } else {
+            return false;
+        }
+    } else if ($comment_from == 'c') {
+        $query = $sm_db->select('customer_id,name');
+        $query = $sm_db->where('customer_id', $comments_by);
+        $query = $sm_db->get('customer');
+        $total_row = $query->num_rows();
+        if ($total_row > 0) {
+            $ressult = $query->row();
+            return $ressult->name;
+        } else {
+            return false;
+        }
+    } else if ($comment_from == 'a') {
+        $query = $sm_db->select('id,username');
+        $query = $sm_db->where('id', $comments_by);
+        $query = $sm_db->get('sm_admin');
+        $total_row = $query->num_rows();
+        if ($total_row > 0) {
+            $ressult = $query->row();
+            return $ressult->username;
+        } else {
+            return false;
+        }
+    }
+}
+
+
+if (!function_exists('get_priority_array_dropdown')) {
+
+    function get_priority_array_dropdown() {
+            $CI =& get_instance();
+            $CI->load->model('Mod_common');     
+            return $CI->Mod_common->get_priority_array_dropdown();
+    }
+}
+
+if (!function_exists('get_service_type_array_dropdown')) {
+
+    function get_service_type_array_dropdown() {
+            $CI =& get_instance();
+            $CI->load->model('Mod_common');     
+            return $CI->Mod_common->get_service_type_array_dropdown();
+    }
+}
+
+if (!function_exists('get_service_task_name_array_dropdown')) {
+
+    function get_service_task_name_array_dropdown($customer_id) {
+            $CI =& get_instance();
+            $CI->load->model('Mod_common');     
+            return $CI->Mod_common->get_service_task_name_array_dropdown($customer_id);
+    }
+}
+
+if (!function_exists('get_customer_array_dropdown')) {
+
+    function get_customer_array_dropdown() {
+            $CI =& get_instance();
+            $CI->load->model('Mod_common');     
+            return $CI->Mod_common->get_customer_array_dropdown();
+    }
+}
+
+if (!function_exists('get_service_engineer_array')) {
+
+    function get_service_engineer_array() {
+            $CI =& get_instance();
+            $CI->load->model('Mod_common');     
+            return $CI->Mod_common->get_service_engineer_array();
+    }
+}
+
+if (!function_exists('ticket_status_array')) {
+
+    function ticket_status_array() {
+        $arr = array(
+            '' => 'Select',
+            'P' => 'Pending',
+            'W' => 'Working',
+            'A' => 'Approved',
+            'C' => 'Cancel'
+        );
+        
+        return $arr;
+    }
+}
+
+
+    function get_relative_time($timestamp){
+        $difference = time() - $timestamp;
+        $periods = array("sec", "min", "hour", "day", "week", "month", "years", "decade");
+        $lengths = array("60","60","24","7","4.35","12","10");
+
+        if ($difference > 0) { // this was in the past
+            $ending = "ago";
+        } else { // this was in the future
+            $difference = -$difference;
+            $ending = "to go";
+        }
+        for($j = 0; $difference >= $lengths[$j]; $j++) $difference /= $lengths[$j];
+        $difference = round($difference);
+        if($difference != 1) $periods[$j].= "s";
+        $text = "$difference $periods[$j] $ending";
+        return $text;
+    }
+    
+    
+//SO============
+    
+    
+    function  get_customer_status_approve($id){
+    $ci = & get_instance();
+    $sm_db = $ci->load->database('icel', TRUE); // database conection for read operation
+
+    $query = $sm_db->select('status');
+    $query = $sm_db->where('send_from',$id);
+    $query = $sm_db->where('status', 'A');
+    $query = $sm_db->get('sm_service_request_dtl');
+    $total_row = $query->num_rows();
+
+          return $query->num_rows();
+  
+} 
+
+   function  get_customer_status_pending($id){
+    $ci = & get_instance();
+    $sm_db = $ci->load->database('icel', TRUE); // database conection for read operation
+
+    $query = $sm_db->select('status');
+    $query = $sm_db->where('send_from',$id);
+    $query = $sm_db->where('status', 'P');
+    $query = $sm_db->get('sm_service_request_dtl');
+    $total_row = $query->num_rows();
+
+          return $query->num_rows();
+  
+}
+
+   function  get_customer_status_cancel($id){
+    $ci = & get_instance();
+    $sm_db = $ci->load->database('icel', TRUE); // database conection for read operation
+
+    $query = $sm_db->select('status');
+    $query = $sm_db->where('send_from',$id);
+    $query = $sm_db->where('status', 'C');
+    $query = $sm_db->get('sm_service_request_dtl');
+    $total_row = $query->num_rows();
+
+          return $query->num_rows();
+  
+}
+
+
+ function  get_engineer_status_approve($id){
+    $ci = & get_instance();
+    $sm_db = $ci->load->database('icel', TRUE); // database conection for read operation
+
+    $query = $sm_db->select('status');
+    $query = $sm_db->where('send_to',$id);
+    $query = $sm_db->where('status', 'A');
+    $query = $sm_db->get('sm_service_request_dtl');
+    $total_row = $query->num_rows();
+
+          return $query->num_rows();
+  
+} 
+
+   function  get_engineer_status_pending($id){
+    $ci = & get_instance();
+    $sm_db = $ci->load->database('icel', TRUE); // database conection for read operation
+
+    $query = $sm_db->select('status');
+    $query = $sm_db->where('send_to',$id);
+    $query = $sm_db->where('status', 'P');
+    $query = $sm_db->get('sm_service_request_dtl');
+    $total_row = $query->num_rows();
+
+          return $query->num_rows();
+  
+}
+
+   function  get_engineer_status_cancel($id){
+    $ci = & get_instance();
+    $sm_db = $ci->load->database('icel', TRUE); // database conection for read operation
+
+    $query = $sm_db->select('status');
+    $query = $sm_db->where('send_to',$id);
+    $query = $sm_db->where('status', 'C');
+    $query = $sm_db->get('sm_service_request_dtl');
+    $total_row = $query->num_rows();
+
+          return $query->num_rows();
+  
+}	

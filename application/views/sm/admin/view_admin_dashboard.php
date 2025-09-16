@@ -1,0 +1,466 @@
+<?php $this->load->view('sm/home/view_dashboard_header'); ?>
+
+<!--page start-->
+<!--mini statistics start-->
+<div class="row">
+    <section class="panel" style="display: none;">
+        <div class="panel-body">
+            <div class="top-stats-panel">
+                <div class="daily-visit">
+                    <h4 class="widget-h">Daily Visitors</h4>
+                    <div id="daily-visit-chart" style="width:100%; height: 100px; display: block">
+
+                    </div>
+                    <ul class="chart-meta clearfix">
+                        <li class="pull-left visit-chart-value">3233</li>
+                        <li class="pull-right visit-chart-title"><i class="fa fa-arrow-up"></i> 15%</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <?php
+    //print_r($customer_list_for_dashboard);
+    if (!empty($customer_list_for_dashboard)) {
+        foreach ($customer_list_for_dashboard as $key_customer_list => $value_customer_list) {
+            //echo ">>>".$value_customer_list->customer_id;
+            $cus_total_ticket = 0;
+
+            $cus_total_ticket_pending = get_cus_total_ticket_status_wise($value_customer_list->customer_id, 'P');
+            $cus_total_ticket_working = get_cus_total_ticket_status_wise($value_customer_list->customer_id, 'W');
+            $cus_total_ticket_progress = get_cus_total_ticket_status_wise($value_customer_list->customer_id, 'O');
+            $cus_total_ticket_approve = get_cus_total_ticket_status_wise($value_customer_list->customer_id, 'A');
+            $cus_total_ticket_cancel = get_cus_total_ticket_status_wise($value_customer_list->customer_id, 'C');
+
+
+            $cus_total_ticket = $cus_total_ticket_pending + $cus_total_ticket_working + $cus_total_ticket_progress + $cus_total_ticket_approve + $cus_total_ticket_cancel;
+
+            if (!empty($cus_total_ticket_pending)) {
+                $cus_total_ticket_pending_per = round((100 * $cus_total_ticket_pending) / $cus_total_ticket);
+            } else {
+                $cus_total_ticket_pending_per = 0;
+            }
+            if (!empty($cus_total_ticket_working)) {
+                $cus_total_ticket_working_per = round((100 * $cus_total_ticket_working) / $cus_total_ticket);
+            } else {
+                $cus_total_ticket_working_per = 0;
+            }
+
+            if (!empty($cus_total_ticket_progress)) {
+                $cus_total_ticket_progress_per = round((100 * $cus_total_ticket_progress) / $cus_total_ticket);
+            } else {
+                $cus_total_ticket_progress_per = 0;
+            }
+
+            if (!empty($cus_total_ticket_approve)) {
+                $cus_total_ticket_approve_per = round((100 * $cus_total_ticket_approve) / $cus_total_ticket);
+            } else {
+                $cus_total_ticket_approve_per = 0;
+            }
+            if (!empty($cus_total_ticket_cancel)) {
+                $cus_total_ticket_cancel_per = round((100 * $cus_total_ticket_cancel) / $cus_total_ticket);
+            } else {
+                $cus_total_ticket_cancel_per = 0;
+            }
+
+
+            //exit();
+            ?>
+            <div class="col-md-3">
+                <section class="panel">
+                    <div class="panel-body">
+                        <div class="top-stats-panel">
+                            <h4 class="widget-h"><?php echo $value_customer_list->name ?></h4>
+                            <div class="bar-stats">
+                                <ul class="progress-stat-bar clearfix">
+                                    <li data-percent="<?php echo $cus_total_ticket_pending_per; ?>%"><span
+                                                class="progress-stat-percent pink"></span></li>
+                                    <li data-percent="<?php echo $cus_total_ticket_working_per; ?>%"><span
+                                                class="progress-stat-percent yellow-b"></span></li>
+                                    <li data-percent="<?php echo $cus_total_ticket_progress_per; ?>%"><span
+                                                class="progress-stat-percent progress_ch"></span></li>
+                                    <li data-percent="<?php echo $cus_total_ticket_approve_per; ?>%"><span
+                                                class="progress-stat-percent green"></span></li>
+                                    <li data-percent="<?php echo $cus_total_ticket_cancel_per; ?>%"><span
+                                                class="progress-stat-percent red-bg"></span></li>
+                                </ul>
+                                <ul class="bar-legend">
+                                    <li><span class="bar-legend-pointer pink"></span> Pending
+                                        ( <?php echo $cus_total_ticket_pending; ?> )
+                                    </li>
+                                    <li><span class="bar-legend-pointer yellow-b "></span> Working
+                                        ( <?php echo $cus_total_ticket_working; ?> )
+                                    </li>
+                                    <li><span class="bar-legend-pointer progress_ch"></span> On Progress
+                                        ( <?php echo $cus_total_ticket_progress; ?> )
+                                    </li>
+                                    <li><span class="bar-legend-pointer green"></span> Complete
+                                        ( <?php echo $cus_total_ticket_approve; ?> )
+                                    </li>
+                                    <li><span class="bar-legend-pointer red-bg"></span> Cancel
+                                        ( <?php echo $cus_total_ticket_cancel; ?> )
+                                    </li>
+                                </ul>
+                                <div class="daily-sales-info">
+                                    <span class="sales-label">Total Ticket : </span><span
+                                            class="sales-count"><?php echo $cus_total_ticket; ?> </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <?php
+        }
+    }
+    ?>
+
+</div>
+<!--mini statistics end-->
+
+<div class="row mbot30 text-center">
+    <a href="<?= base_url('sm/dashboard/customer_list'); ?>" class="btn btn-round btn-success btn-lg">More Customer</a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="event-calendar clearfix">
+            <div class="col-lg-7 calendar-block">
+                <section class="panel">
+                    <header class="panel-heading">
+                        Todays Summary <span class="tools pull-right">
+                        </span>
+                    </header>
+                    <div class="panel-body" style="padding: 0px !important;">
+                        <div class="top-stats-panel">
+
+
+                            <ul class="nav nav-pills nav-stacked">
+                                <li><a href="javascript:;"> <i class="fa fa-dot-circle-o"></i> <span
+                                                style="color: #080;">Ticket Pending </span>
+                                        <span class="badge label-default pull-right r-activity"><?php echo $ticket_list_daily_pending; ?></span>
+                                    </a>
+                                </li>
+                                <li><a href="javascript:;"> <i class="fa fa-cogs"></i> <span style="color: #a48ad4;">Ticket Working </span>
+                                        <span class="badge label-success pull-right r-activity"
+                                              style="background-color:#a48ad4;"><?php echo $ticket_list_daily_pending; ?></span>
+                                    </a>
+                                </li>
+
+                                <li><a href="javascript:;"> <i class="fa fa-dot-circle-o"></i> <span
+                                                style="color: #2F4F4F;">Ticket On Progress </span>
+                                        <span class="badge label-primary pull-right r-activity"><?php echo $ticket_list_daily_progress; ?></span>
+                                    </a>
+                                </li>
+                                <li><a href="javascript:;"> <i class="fa fa-check"></i> <span style="color: #003399;"> Ticket Complete </span>
+                                        <span class="badge label-success pull-right r-activity"><?php echo $ticket_list_daily_approve; ?></span>
+                                    </a>
+                                </li>
+                                <li><a href="javascript:;"> <i class="ico-close"></i> <span style="color: #e51d18;">Ticket Cancel</span>
+                                        <span class="badge label-danger pull-right r-activity"><?php echo $ticket_list_daily_cancel; ?></span>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                <section class="panel">
+                    <header class="panel-heading">
+                        Current Month Summary <span class="tools pull-right">
+                        </span>
+                    </header>
+                    <div class="panel-body" style="padding: 0px !important;">
+                        <div class="top-stats-panel">
+                            <div class="bar-stats">
+                                <ul class="progress-stat-bar clearfix">
+                                    <?php
+                                    $total_ticket_list_monthly = 0;
+                                    $total_ticket_list_monthly = $ticket_list_monthly_pending + $ticket_list_monthly_working + $ticket_list_monthly_progress + $ticket_list_monthly_approve + $ticket_list_monthly_cancel;
+
+
+                                    if (!empty($ticket_list_monthly_pending)) {
+                                        $ticket_list_monthly_pending_per = round((100 * $ticket_list_monthly_pending) / $total_ticket_list_monthly);
+                                    } else {
+                                        $ticket_list_monthly_pending_per = 0;
+                                    }
+
+
+                                    if (!empty($ticket_list_monthly_working)) {
+                                        $ticket_list_monthly_pending_per = round((100 * $ticket_list_monthly_working) / $total_ticket_list_monthly);
+                                    } else {
+                                        $ticket_list_monthly_working_per = 0;
+                                    }
+
+
+                                    if (!empty($ticket_list_monthly_progress)) {
+                                        $ticket_list_monthly_progress_per = round((100 * $ticket_list_monthly_progress) / $total_ticket_list_monthly);
+                                    } else {
+                                        $ticket_list_monthly_progress_per = 0;
+                                    }
+
+                                    if (!empty($ticket_list_monthly_approve)) {
+                                        $ticket_list_monthly_approve_per = round((100 * $ticket_list_monthly_approve) / $total_ticket_list_monthly);
+                                    } else {
+                                        $ticket_list_monthly_approve_per = 0;
+                                    }
+                                    if (!empty($ticket_list_monthly_cancel)) {
+                                        $ticket_list_monthly_cancel_per = round((100 * $ticket_list_monthly_cancel) / $total_ticket_list_monthly);
+                                    } else {
+                                        $ticket_list_monthly_cancel_per = 0;
+                                    }
+                                    ?>
+                                    <li data-percent="<?php echo $ticket_list_monthly_pending_per; ?>%"><span
+                                                class="progress-stat-percent pink"></span></li>
+                                    <li data-percent="<?php echo $ticket_list_monthly_working_per; ?>%"><span
+                                                class="progress-stat-percent yellow-b"></span></li>
+                                    <li data-percent="<?php echo $ticket_list_monthly_progress_per; ?>%"><span
+                                                class="progress-stat-percent progress_ch"></span></li>
+                                    <li data-percent="<?php echo $ticket_list_monthly_approve_per; ?>%"><span
+                                                class="progress-stat-percent green"></span></li>
+                                    <li data-percent="<?php echo $ticket_list_monthly_cancel_per; ?>%"><span
+                                                class="progress-stat-percent red-bg"></span></li>
+                                </ul>
+                                <ul class="bar-legend">
+                                    <li><span class="bar-legend-pointer pink"></span> Pending
+                                        ( <?php echo $ticket_list_monthly_pending; ?> )
+                                    </li>
+                                    <li><span class="bar-legend-pointer yellow-b"></span> Working
+                                        ( <?php echo $ticket_list_monthly_approve; ?> )
+                                    </li>
+                                    <li><span class="bar-legend-pointer progress_ch"></span> On Progress
+                                        ( <?php echo $ticket_list_monthly_progress; ?> )
+                                    </li>
+                                    <li><span class="bar-legend-pointer green"></span> Complete
+                                        ( <?php echo $ticket_list_monthly_working; ?> )
+                                    </li>
+                                    <li><span class="bar-legend-pointer red-bg"></span> Cancel
+                                        ( <?php echo $ticket_list_monthly_cancel; ?> )
+                                    </li>
+                                </ul>
+                                <div class="daily-sales-info">
+                                    <span class="sales-label">Total Ticket : </span><span
+                                            class="sales-count"><?php echo $total_ticket_list_monthly; ?></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="col-lg-5 event-list-block">
+                <div class="cal-day">
+                    <span>Latest</span>
+                    Request List
+                </div>
+                <ul class="event-list">
+                    <?php
+                    if (!empty($total_ticket_list_dashboard_notice)) {
+                        foreach ($total_ticket_list_dashboard_notice as $key_total_ticket_list => $value_total_ticket_list) {
+                            $relative_time = "";
+                            $relative_time = get_relative_time(strtotime($value_total_ticket_list->created_date_time));
+                            $res_customer_details = get_customer_details_customer_id($value_total_ticket_list->send_from);
+
+                            ?>
+                            <li><?php echo $value_total_ticket_list->ticket_no; ?> @ <?php echo $relative_time; ?><a
+                                        href="#"
+                                        class="event-close"><?php echo isset($res_customer_details->customer_code) ? $res_customer_details->customer_code : ''; ?></a>
+                            </li>
+                            <?php
+                        }
+                    }
+                    ?>
+
+                </ul>
+                <input type="text" class="form-control evnt-input" placeholder="">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="profile-nav alt">
+            <section class="panel">
+                <div class="user-heading alt clock-row terques-bg" style="min-height:152px;">
+                    <h1><?php echo date('F Y'); ?></h1>
+                    <p class="text-left"><?php echo date('l'); ?></p>
+                    <p class="text-left"><?php echo date('h:i A'); ?></p>
+                </div>
+                <ul id="clock">
+                    <li id="sec"></li>
+                    <li id="hour"></li>
+                    <li id="min"></li>
+                </ul>
+
+                <ul class="clock-category">
+                    <li>
+                        <a href="#" class="active">
+                            <i class="ico-clock2"></i>
+                            <span>Clock</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="ico-alarm2 "></i>
+                            <span>Alarm</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="ico-stopwatch"></i>
+                            <span>Stop watch</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class=" ico-clock2 "></i>
+                            <span>Timer</span>
+                        </a>
+                    </li>
+                </ul>
+
+            </section>
+            <!--widget weather start-->
+            <section class="weather-widget clearfix">
+                <div class="pull-left weather-icon">
+                    <canvas id="icon1" width="60" height="60"></canvas>
+                </div>
+                <div>
+                    <ul class="weather-info">
+                        <li class="weather-city">Bangladesh <i class="ico-location"></i></li>
+                        <li class="weather-cent"><span>28</span></li>
+                        <li class="weather-status">Normal</li>
+                    </ul>
+                </div>
+            </section>
+            <!--widget weather end-->
+
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8">
+        <!--earning graph start-->
+        <section class="panel">
+            <header class="panel-heading">
+                Ticket Summary <span class="tools pull-right">
+                </span>
+            </header>
+            <div class="panel-body">
+
+                <!--                <div id="graph-area" class="main-chart" style="display: none;">
+                                </div>-->
+                <?php
+                $year_wise_summary_data = array(
+                    array(
+                        'Pending', 0, $total_ticket_list_pending
+                    ), array(
+                        'Working', 0, $total_ticket_list_working
+                    ), array(
+                        'Progress', 0, $total_ticket_list_progress
+                    ), array(
+                        'Complete', 0, $total_ticket_list_approve
+                    ), array(
+                        'Cancel', 0, $total_ticket_list_cancel
+                    ),
+
+                );
+                ?>
+                <script type="text/javascript">
+                    var year_wise_summary_data = JSON.parse('<?php echo json_encode($year_wise_summary_data); ?>');
+
+                </script>
+                <!--                    <div class="sm-pie" style="display: none;">
+                                    </div>-->
+                <div class="chart">
+                    <div id="chart"></div>
+                </div>
+
+                <div class="region-stats">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="region-earning-stats" style="padding-top: 6px;padding-bottom: 0px;">
+                                Total Ticket
+                                <span><?php echo $total_ticket_list_pending + $total_ticket_list_working + $total_ticket_list_progress + $total_ticket_list_approve + $total_ticket_list_cancel; ?></span>
+                            </div>
+
+                        </div>
+                        <div class="col-md-8">
+                            <div class="region-earning-stats" style="padding-top: 6px;padding-bottom: 0px;">
+                                <ul class="clearfix location-earning-stats">
+                                    <li class="stat-divider">
+                                        <span class="first-city"><?php echo $total_ticket_list_pending; ?></span>
+                                        Pending
+                                    </li>
+                                    <li class="stat-divider">
+                                        <span class="first-city"><?php echo $total_ticket_list_working; ?></span>
+                                        Working
+                                    </li>
+                                    <li class="stat-divider">
+                                        <span class="first-city"><?php echo $total_ticket_list_progress; ?></span>
+                                        On Progress
+                                    </li>
+                                    <li class="stat-divider">
+                                        <span class="second-city"><?php echo $total_ticket_list_approve; ?></span>
+                                        Complete
+                                    </li>
+                                    <li>
+                                        <span class="third-city"><?php echo $total_ticket_list_cancel; ?></span>
+                                        Cancel
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!--earning graph end-->
+    </div>
+    <div class="col-md-4">
+        <section class="panel">
+            <header class="panel-heading">
+                Year Wise Summary <span class="tools pull-right">
+                </span>
+            </header>
+            <div class="panel-body" style="height: 425px;">
+                <table class="ds-year table  table-hover general-table">
+                    <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th class="hidden-phone">Pending</th>
+                        <th>Working</th>
+                        <th>Progress</th>
+                        <th>Complete</th>
+                        <th>Cancel</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+                    unset($year_array[""]);
+
+                    foreach ($year_array as $key => $value) {
+                        ?>
+                        <tr>
+                            <td><?php echo $value; ?></td>
+                            <td><?php echo get_year_status_wise_total_ticket_for_admin($value, 'P'); ?></td>
+                            <td><?php echo get_year_status_wise_total_ticket_for_admin($value, 'W'); ?></td>
+                            <td><?php echo get_year_status_wise_total_ticket_for_admin($value, 'O'); ?></td>
+                            <td><?php echo get_year_status_wise_total_ticket_for_admin($value, 'A'); ?></td>
+                            <td><?php echo get_year_status_wise_total_ticket_for_admin($value, 'C'); ?></td>
+                        </tr>
+                        <?php
+                    }
+                    ?>
+
+                    </tbody>
+                </table>
+
+            </div>
+        </section>
+
+    </div>
+</div>
+<!--page end-->
+
+<?php
+$this->load->view('sm/home/view_dashboard_footer');
+?>    

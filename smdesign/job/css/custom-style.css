@@ -1,0 +1,85 @@
+﻿
+
+/* =============================================================
+   GENERAL STYLES
+ ============================================================ */
+body {
+    font-family: 'Open Sans', sans-serif;
+    font-size:11px;
+    line-height:20px;
+}
+
+h4{
+    font-weight: bold;
+}
+/* =============================================================
+   PAGE STYLES
+ ============================================================ */
+
+
+.contact-info hr {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.client-info {
+    font-size:15px;
+    padding-bottom:20px;
+    padding-top:20px;
+}
+
+.ttl-amts {
+    text-align:right;
+    padding-right:50px;
+}
+
+p.sign{
+    font-size: 11px;
+    /*border-top: 1px solid black;*/
+}
+
+p.txt{
+    margin-left: 15px;
+}
+
+
+
+.reg{
+    font-size: 9px;
+}
+.sales{
+    font-size: 9px;
+    padding-top: 5px;
+}
+
+.address{
+    margin-left: 50px;
+}
+
+b{
+    font-weight: bold;
+}
+
+
+table tr td{
+    padding: 5px;
+}
+
+table tr th{
+    font-weight: 400;
+    padding: 5px;
+}
+
+
+.signature{
+    border-top: 1px solid black;
+    padding: 3px;
+}
+
+.sector-sig{
+    font-size: 10px !important;
+}
+
+.footer-text{
+    font-size: 9px;
+}
